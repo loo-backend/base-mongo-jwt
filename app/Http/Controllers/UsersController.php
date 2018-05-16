@@ -9,6 +9,7 @@ use App\Services\UserRemoveService;
 use App\Services\UserUpdateService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
@@ -18,18 +19,22 @@ class UsersController extends Controller
      * @var UserCreateService
      */
     private $createService;
+
     /**
      * @var UserFindService
      */
     private $findService;
+
     /**
      * @var UserAllService
      */
     private $allService;
+
     /**
      * @var UserRemoveService
      */
     private $removeService;
+
     /**
      * @var UserUpdateService
      */
@@ -89,9 +94,9 @@ class UsersController extends Controller
     {
 
         $this->validate($request,[
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users|max:255',
-            'password' => 'required|confirmed|min:6|max:255'
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|unique:users|max:255',
+            'password' => 'required|string|confirmed|min:6|max:255'
         ]);
 
         if (!$result = $this->createService->create($request)) {
@@ -99,7 +104,7 @@ class UsersController extends Controller
             return response()->json(['error' => 'user_not_created'], 500);
         }
 
-        return response()->json($result,200);
+        return response()->json($result, 200);
 
     }
 
@@ -128,15 +133,20 @@ class UsersController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @param  int $id
      * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, $id)
     {
 
         $validation = [
-            'name' => 'required|max:255',
-            'email' => 'required|unique:users|max:255',
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                Rule::unique('users', '_id')->ignore($id),
+                'max:255'
+            ]
         ];
+
 
         if(isset($request->all()['password'])){
             $validation['password'] = 'required|confirmed|max:255';

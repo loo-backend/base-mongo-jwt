@@ -2,10 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\User;
+use Tests\TestCase;
 
 class UserTest extends TestCase
 {
@@ -90,11 +88,10 @@ class UserTest extends TestCase
 
         $data = [
             'name' => str_random(12),
-            'email' => str_random(6) . '@mail.com'
+            'email' => $user->email
         ];
 
-        $this->put('/admin/users/'. $user->id, $data)
-            ->assertStatus(200);
+        $this->put('/admin/users/'. $user->id, $data);
 
         $this->assertDatabaseMissing('users',[
             'name' => $user->name,
@@ -109,13 +106,14 @@ class UserTest extends TestCase
         $user = User::first();
         $data = [
             'name' => str_random(12),
-            'email' => str_random(6) . '@mail.com',
-            'password' => '123456',
-            'password_confirmation' => '123456'
+            'email' => str_random(7) . '@mail.com',
+            'password' => 123456,
+            'password_confirmation' => 123456
         ];
 
         $this->put('/admin/users/' . $user->id, $data)
              ->assertStatus(200);
+
 
         $this->assertDatabaseMissing('users', [
             'name' => $user->name,

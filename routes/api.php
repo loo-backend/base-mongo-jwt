@@ -18,4 +18,6 @@ use Illuminate\Http\Request;
 //});
 
 
-Route::resource('users', 'UsersController');
+$this->resource('users', 'UsersController')->except([
+    'create', 'edit'
+]);
