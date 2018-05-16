@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\User;
 use Tests\TestCase;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserTest extends TestCase
 {
@@ -40,20 +39,6 @@ class UserTest extends TestCase
     }
 
 
-    public function testUserAuthenticate(){
-
-        $user = User::first();
-
-        $response = $this->post('/admin/users/authenticate',
-                ['email'=>$user->email,'password' => $this->data['password']])
-            ->assertStatus(200);
-
-        $content = (array) json_decode($response->content());
-
-        $this->assertArrayHasKey('token', $content);
-
-
-    }
 
     public function testShowUser()
     {
