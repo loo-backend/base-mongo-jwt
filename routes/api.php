@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 //    return $request->user();
 //});
 
+$this->post('users/authenticate', 'UsersController@authenticate');
 
 $this->resource('users', 'UsersController')->except([
     'create', 'edit'
