@@ -12,8 +12,7 @@ use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 class User extends Authenticatable implements JWTSubject
 {
 
-    use SoftDeletes;
-    use Notifiable;
+    use SoftDeletes, Notifiable;
 
     /**
      * The attributes that are mass assignable.

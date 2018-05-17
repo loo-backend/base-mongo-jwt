@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
+
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 
 class AuthApiController extends Controller
 {
+
+
 
     /**
      * @param Request $request
@@ -23,17 +27,32 @@ class AuthApiController extends Controller
         $credentials = $request->only('email', 'password');
 
         try {
+
             // attempt to verify the credentials and create a token for the user
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 401);
+                return response()->json([
+                    'success' => false,
+                    'error' => 'invalid_credentials'
+                ], 401);
             }
+
         } catch (JWTException $e) {
+
             // something went wrong whilst attempting to encode the token
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            return response()->json([
+                'success' => false,
+                'error' => 'could_not_create_token'
+            ], 500);
+
         }
 
         // all good so return the token
-        return response()->json(compact('token'));
+        return response()->json([
+            'success' => true,
+            'token' => $token,
+            'data'=> \App\User::where('email', $request->input('email'))->first()
+        ], 200);
+
     }
 
 }

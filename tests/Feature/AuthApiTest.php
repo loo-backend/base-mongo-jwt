@@ -10,6 +10,7 @@ class AuthApiTest extends TestCase
 
 
     public $data = [];
+    public $content;
 
     public function __construct(?string $name = null, array $data = [], string $dataName = '')
     {
@@ -39,7 +40,7 @@ class AuthApiTest extends TestCase
     }
 
 
-    public function testUserAuthenticate(){
+    public function testUserAuthenticateValid() {
 
         $user = User::first();
 
@@ -47,13 +48,26 @@ class AuthApiTest extends TestCase
                 ['email'=>$user->email,'password' => $this->data['password']])
             ->assertStatus(200);
 
-        $content = (array) json_decode($response->content());
-
-        $this->assertArrayHasKey('token', $content);
-
+        $response->assertJson(['success' => true]);
+        $response->assertJson(['token' => true]);
+        $response->assertJson(['data' => true]);
 
     }
 
+
+    public function testUserAuthenticateInvalid() {
+
+        $user = User::first();
+
+        $response = $this->post('/auth/authenticate',
+                ['email'=>$user->email,'password' => str_random(6)])
+            ->assertStatus(401);
+
+        $response->assertJson(['success' => false]);
+        $response->assertJson(['error' => 'invalid_credentials']);
+
+
+    }
 
     public function testDeleteUser()
     {

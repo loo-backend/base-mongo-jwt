@@ -105,6 +105,7 @@ class UserTest extends TestCase
 
     public function testUpdateUserWithPassword()
     {
+
         $user = User::first();
         $data = [
             'name' => str_random(12),
@@ -127,6 +128,7 @@ class UserTest extends TestCase
 
     public function testDeleteUser()
     {
+
         $user = User::first();
 
         $this->delete('/admin/users/'.$user->id)
