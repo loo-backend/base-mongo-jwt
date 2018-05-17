@@ -14,32 +14,23 @@ use Faker\Generator as Faker;
 */
 
 
-use Illuminate\Support\Facades\Hash;
-
-
-//$data['roles'] =    [[
-//        'name' => 'CLIENT_ADMIN',
-//        'permissions' => [
-//            'ALL'
-//        ],
-//    ],
-//        [
-//            'name' => 'CLIENT_STAFF',
-//            'permissions' => [
-//                'CREATE',
-//                'READ',
-//                'UPDATE',
-//            ]
-//        ]
-//    ];
-
-
-
 $factory->define(App\User::class, function (Faker $faker) {
+
+
+    $roles =
+        ['name' => 'CLIENT_ADMIN',
+            'permissions' => [
+                'ALL'
+            ]
+        ];
+
+
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
         'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
         'remember_token' => str_random(10),
+        'uuid' => $faker->uuid,
+        'roles' => [$roles]
     ];
 });

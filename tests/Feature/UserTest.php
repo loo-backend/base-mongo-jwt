@@ -8,7 +8,6 @@ use Tests\TestCase;
 class UserTest extends TestCase
 {
 
-
     public $data = [];
 
     public function __construct(?string $name = null, array $data = [], string $dataName = '')
@@ -25,11 +24,32 @@ class UserTest extends TestCase
 
     }
 
+
+    public function getToken()
+    {
+
+        factory(User::class)->create();
+
+        $user = User::first();
+
+        $response = $this->post('/auth/authenticate',
+            ['email'=>$user->email,'password' => $this->data['password']])
+            ->assertStatus(200);
+
+        $data = (array) json_decode( $response->content() );
+
+        return $data['token'];
+
+    }
+
     public function testUserCreate()
     {
 
-        $this->post('/admin/users', $this->data)
-            ->assertStatus(200);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('POST', '/admin/users', $this->data);
+
+        $response->assertStatus(200);
 
         $this->assertDatabaseHas('users', [
             'name' => $this->data['name'],
@@ -39,13 +59,17 @@ class UserTest extends TestCase
     }
 
 
-
     public function testShowUser()
     {
+
         $user = User::first();
 
-        $response = $this->get('/admin/users/'. $user->id)
-                ->assertStatus(200);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('GET', '/admin/users/'. $user->id);
+
+
+        $response->assertStatus(200);
 
         $response->assertJsonStructure([
             '_id',
@@ -63,8 +87,11 @@ class UserTest extends TestCase
     public function testAllUsers()
     {
 
-        $response = $this->get('/admin/users')
-                         ->assertStatus(200);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('GET', '/admin/users');
+
+        $response->assertStatus(200);
 
         $response->assertJsonStructure([
             '*' => [
@@ -90,10 +117,16 @@ class UserTest extends TestCase
 
         $data = [
             'name' => str_random(12),
-            'email' => $user->email
+            'email' => $user->email,
+            'token' => $this->getToken()
         ];
 
-        $this->put('/admin/users/'. $user->id, $data);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('PUT', '/admin/users/'.$user->id, $data);
+
+
+        $response->assertStatus(200);
 
         $this->assertDatabaseMissing('users',[
             'name' => $user->name,
@@ -111,12 +144,17 @@ class UserTest extends TestCase
             'name' => str_random(12),
             'email' => str_random(7) . '@mail.com',
             'password' => 123456,
-            'password_confirmation' => 123456
+            'password_confirmation' => 123456,
+            'token' => $this->getToken()
         ];
 
-        $this->put('/admin/users/' . $user->id, $data)
-             ->assertStatus(200);
 
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('PUT', '/admin/users/'.$user->id, $data);
+
+
+        $response->assertStatus(200);
 
         $this->assertDatabaseMissing('users', [
             'name' => $user->name,
@@ -129,13 +167,24 @@ class UserTest extends TestCase
     public function testDeleteUser()
     {
 
-        $user = User::first();
+        $user_all = User::all();
 
-        $this->delete('/admin/users/'.$user->id)
-            ->assertStatus(200)
-            ->assertExactJson([
-                'response' => 'user_removed'
-            ]);
+        foreach ($user_all as $u) {
+            User::find($u->id)->forceDelete();
+        }
+
+        $user =  factory(User::class)->create()->first();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('DELETE', '/admin/users/'.$user->id);
+
+        $response->assertStatus(200)
+                ->assertExactJson([
+                    'response' => 'user_removed'
+                ]);
+
+
     }
 
 }

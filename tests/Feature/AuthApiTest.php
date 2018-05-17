@@ -8,14 +8,12 @@ use Tests\TestCase;
 class AuthApiTest extends TestCase
 {
 
-
     public $data = [];
     public $content;
 
     public function __construct(?string $name = null, array $data = [], string $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
-
 
         $this->data = [
             'name' => str_random(10),
@@ -26,11 +24,32 @@ class AuthApiTest extends TestCase
 
     }
 
+    public function getToken()
+    {
+
+        factory(User::class)->create();
+
+        $user = User::first();
+
+        $response = $this->post('/auth/authenticate',
+            ['email'=>$user->email,'password' => $this->data['password']])
+            ->assertStatus(200);
+
+        $data = (array) json_decode( $response->content() );
+
+        return $data['token'];
+
+    }
+
     public function testUserCreate()
     {
 
-        $this->post('/admin/users', $this->data)
-            ->assertStatus(200);
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('POST', '/admin/users', $this->data);
+
+        $response->assertStatus(200);
 
         $this->assertDatabaseHas('users', [
             'name' => $this->data['name'],
@@ -43,6 +62,7 @@ class AuthApiTest extends TestCase
     public function testUserAuthenticateValid() {
 
         $user = User::first();
+
 
         $response = $this->post('/auth/authenticate',
                 ['email'=>$user->email,'password' => $this->data['password']])
@@ -66,18 +86,7 @@ class AuthApiTest extends TestCase
         $response->assertJson(['success' => false]);
         $response->assertJson(['error' => 'invalid_credentials']);
 
-
     }
 
-    public function testDeleteUser()
-    {
-        $user = User::first();
-
-        $this->delete('/admin/users/'.$user->id)
-            ->assertStatus(200)
-            ->assertExactJson([
-                'response' => 'user_removed'
-            ]);
-    }
 
 }

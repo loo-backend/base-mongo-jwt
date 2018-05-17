@@ -25,8 +25,7 @@ class UserCreateService
             'permissions' => [
                 'ALL'
             ]
-        ]
-    ;
+        ];
 
     /**
      * Create User
