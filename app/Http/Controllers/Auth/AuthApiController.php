@@ -2,18 +2,29 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Services\UserWhereFirstService;
+use Illuminate\Http\Request;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 
 class AuthApiController extends Controller
 {
+    /**
+     * @var UserWhereFirstService
+     */
+    private $whereFirstService;
 
+    /**
+     * AuthApiController constructor.
+     * @param UserWhereFirstService $whereFirstService
+     */
+    public function __construct(UserWhereFirstService $whereFirstService)
+    {
 
+        $this->whereFirstService = $whereFirstService;
+    }
 
     /**
      * @param Request $request
@@ -50,7 +61,7 @@ class AuthApiController extends Controller
         return response()->json([
             'success' => true,
             'token' => $token,
-            'data'=> \App\User::where('email', $request->input('email'))->first()
+            'data'=> $this->whereFirstService->whereFirst(['email' => $request->input('email')])
         ], 200);
 
     }
