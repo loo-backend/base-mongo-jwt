@@ -12,8 +12,9 @@ use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 class User extends Authenticatable implements JWTSubject
 {
 
-    use SoftDeletes;
-    use Notifiable;
+    use SoftDeletes, Notifiable;
+
+    public $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +22,14 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'roles', 'uuid',
+        'user_uuid',
+        'name',
+        'email',
+        'password',
+        'remember_token',
+        'is_administrator',
+        'active',
+        'roles'
     ];
 
     /**

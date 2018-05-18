@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Role;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -21,12 +20,11 @@ class UserCreateService
      * @var array
      */
     private $roles =
-        ['name' => 'CLIENT_ADMIN',
+        ['name' => 'ADMIN_STAFF_SUPPORT',
             'permissions' => [
                 'ALL'
             ]
-        ]
-    ;
+        ];
 
     /**
      * Create User
@@ -40,8 +38,18 @@ class UserCreateService
 
         $data = $request->all();
 
+        if (!empty($request['roles'])) {
+            $this->roles = $request['roles'];
+        }
+
+        unset($data['roles']);
+
         $data['password'] = Hash::make($request->all()['password']);
-        $data['uuid'] = Uuid::generate(4)->string;
+        $data['user_uuid'] = Uuid::generate(4)->string;
+
+        if (!isset($request['active'])) {
+            $data['active'] = false;
+        }
 
         if (!$create = User::create($data) ) {
             return false;

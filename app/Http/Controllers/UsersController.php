@@ -7,9 +7,14 @@ use App\Services\UserCreateService;
 use App\Services\UserFindService;
 use App\Services\UserRemoveService;
 use App\Services\UserUpdateService;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTFactory;
+
 
 class UsersController extends Controller
 {
@@ -62,6 +67,7 @@ class UsersController extends Controller
         $this->updateService = $updateService;
     }
 
+
     /**
      * Display a listing of the resource.
      *
@@ -78,9 +84,7 @@ class UsersController extends Controller
 
         return response()->json($result,200);
 
-
     }
-
 
     /**
      *

@@ -5,13 +5,22 @@ namespace Tests\Feature;
 use App\User;
 use Tests\TestCase;
 
+date_default_timezone_set('America/Sao_Paulo');
+
 class UserTest extends TestCase
 {
+
+    private $roles =
+        ['name' => 'ADMINISTRATOR',
+            'permissions' => [
+                'ALL'
+            ]
+        ];
 
 
     public $data = [];
 
-    public function __construct(?string $name = null, array $data = [], string $dataName = '')
+    public function __construct(string $name = null, array $data = [], string $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
@@ -19,36 +28,74 @@ class UserTest extends TestCase
         $this->data = [
             'name' => str_random(10),
             'email' => str_random(6) . '@mail.com',
+            'active' => true,
+            'is_administrator' => true,
             'password' => 'secret',
             'password_confirmation' => 'secret',
         ];
 
     }
 
-    public function testUserCreate()
+
+    public function getToken()
     {
 
-        $this->post('/admin/users', $this->data)
+        $users = factory(User::class)->create();
+        $users->roles()->create($this->roles);
+
+        $user = User::first();
+
+        $response = $this->post('/auth/authenticate',
+            ['email'=>$user->email,'password' => $this->data['password']])
             ->assertStatus(200);
 
-        $this->assertDatabaseHas('users', [
-            'name' => $this->data['name'],
-            'email' => $this->data['email']
-        ]);
+        $data = (array) json_decode( $response->content() );
+
+        return $data['token'];
 
     }
 
+    public function testUserCreate()
+    {
+
+
+        $data = $this->data;
+        $data['roles'] = $this->roles;
+
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('POST', '/admin/users', $data);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('users', [
+            'name' => $data['name'],
+            'email' => $data['email']
+        ]);
+
+
+    }
+
+
     public function testShowUser()
     {
+
         $user = User::first();
 
-        $response = $this->get('/admin/users/'. $user->id)
-                ->assertStatus(200);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('GET', '/admin/users/'. $user->id);
+
+
+        $response->assertStatus(200);
 
         $response->assertJsonStructure([
             '_id',
+            'user_uuid',
             'name',
             'email',
+            'active',
             'roles' => [
                 '*' => [
                     'name', 'permissions'
@@ -61,15 +108,20 @@ class UserTest extends TestCase
     public function testAllUsers()
     {
 
-        $response = $this->get('/admin/users')
-                         ->assertStatus(200);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('GET', '/admin/users');
+
+        $response->assertStatus(200);
 
         $response->assertJsonStructure([
             '*' => [
 
                 '_id',
+                'user_uuid',
                 'name',
                 'email',
+                'active',
                 'roles' => [
                     '*' => [
                         'name', 'permissions'
@@ -88,10 +140,16 @@ class UserTest extends TestCase
 
         $data = [
             'name' => str_random(12),
-            'email' => $user->email
+            'email' => $user->email,
+            'token' => $this->getToken()
         ];
 
-        $this->put('/admin/users/'. $user->id, $data);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('PUT', '/admin/users/'.$user->id, $data);
+
+
+        $response->assertStatus(200);
 
         $this->assertDatabaseMissing('users',[
             'name' => $user->name,
@@ -103,17 +161,23 @@ class UserTest extends TestCase
 
     public function testUpdateUserWithPassword()
     {
+
         $user = User::first();
         $data = [
             'name' => str_random(12),
             'email' => str_random(7) . '@mail.com',
             'password' => 123456,
-            'password_confirmation' => 123456
+            'password_confirmation' => 123456,
+            'token' => $this->getToken()
         ];
 
-        $this->put('/admin/users/' . $user->id, $data)
-             ->assertStatus(200);
 
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('PUT', '/admin/users/'.$user->id, $data);
+
+
+        $response->assertStatus(200);
 
         $this->assertDatabaseMissing('users', [
             'name' => $user->name,
@@ -125,13 +189,25 @@ class UserTest extends TestCase
 
     public function testDeleteUser()
     {
-        $user = User::first();
 
-        $this->delete('/admin/users/'.$user->id)
-            ->assertStatus(200)
-            ->assertExactJson([
-                'response' => 'user_removed'
-            ]);
+        $user_all = User::all();
+
+        foreach ($user_all as $u) {
+            User::find($u->id)->forceDelete();
+        }
+
+        $user =  factory(User::class)->create()->first();
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('DELETE', '/admin/users/'.$user->id);
+
+        $response->assertStatus(200)
+                ->assertExactJson([
+                    'response' => 'user_removed'
+                ]);
+
+
     }
 
 }
