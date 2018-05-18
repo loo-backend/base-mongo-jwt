@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 date_default_timezone_set('America/Sao_Paulo');
 
-class UserTest extends TestCase
+class UsersAdminTest extends TestCase
 {
 
     private $roles =
@@ -65,7 +65,7 @@ class UserTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('POST', '/admin/users', $data);
+        ])->json('POST', '/users/admins', $data);
 
         $response->assertStatus(200);
 
@@ -85,7 +85,7 @@ class UserTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('GET', '/admin/users/'. $user->id);
+        ])->json('GET', '/users/admins/'. $user->id);
 
 
         $response->assertStatus(200);
@@ -110,7 +110,7 @@ class UserTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('GET', '/admin/users');
+        ])->json('GET', '/users/admins');
 
         $response->assertStatus(200);
 
@@ -146,7 +146,7 @@ class UserTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('PUT', '/admin/users/'.$user->id, $data);
+        ])->json('PUT', '/users/admins/'.$user->id, $data);
 
 
         $response->assertStatus(200);
@@ -174,7 +174,7 @@ class UserTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('PUT', '/admin/users/'.$user->id, $data);
+        ])->json('PUT', '/users/admins/'.$user->id, $data);
 
 
         $response->assertStatus(200);
@@ -200,7 +200,7 @@ class UserTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('DELETE', '/admin/users/'.$user->id);
+        ])->json('DELETE', '/users/admins/'.$user->id);
 
         $response->assertStatus(200)
                 ->assertExactJson([

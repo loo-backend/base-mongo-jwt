@@ -65,7 +65,7 @@ class AuthApiTest extends TestCase
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('POST', '/admin/users', $this->data);
+        ])->json('POST', '/users/admins', $this->data);
 
         $response->assertStatus(200);
 
