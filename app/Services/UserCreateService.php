@@ -45,7 +45,7 @@ class UserCreateService
         unset($data['roles']);
 
         $data['password'] = Hash::make($request->all()['password']);
-        $data['uuid'] = Uuid::generate(4)->string;
+        $data['user_uuid'] = Uuid::generate(4)->string;
 
         if (!isset($request['active'])) {
             $data['active'] = false;

@@ -21,13 +21,13 @@ class CreateUsersTable extends Migration
         ->table('users', function (Blueprint $table)
         {
             $table->increments('id');
+            $table->uuid('user_uuid');
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('remember_token');
-            $table->enum('type')->default('USER');
+            $table->boolean('is_administrator')->default(false);
             $table->boolean('active')->default(false);
-            $table->uuid('uuid');
             $table->jsonb('roles');
             $table->rememberToken();
             $table->timestamps();

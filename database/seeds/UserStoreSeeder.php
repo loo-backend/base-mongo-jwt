@@ -35,7 +35,7 @@ class UserStoreSeeder extends Seeder
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
         });
-        
+
     }
 
 

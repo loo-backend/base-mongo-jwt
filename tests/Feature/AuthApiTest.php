@@ -29,7 +29,7 @@ class AuthApiTest extends TestCase
             'name' => str_random(10),
             'email' => str_random(6) . '@mail.com',
             'active' => true,
-            'type' => 'ADMIN',
+            'is_administrator' => true,
             'password' => 'secret',
             'password_confirmation' => 'secret',
         ];
@@ -44,7 +44,7 @@ class AuthApiTest extends TestCase
         ]);
 
 
-        $users = factory(User::class)->create(['type_admin' => true]);
+        $users = factory(User::class)->create();
         $users->roles()->create($this->roles);
 
 

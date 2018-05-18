@@ -29,7 +29,7 @@ class UserTest extends TestCase
             'name' => str_random(10),
             'email' => str_random(6) . '@mail.com',
             'active' => true,
-            'type' => 'ADMIN',
+            'is_administrator' => true,
             'password' => 'secret',
             'password_confirmation' => 'secret',
         ];
@@ -40,7 +40,7 @@ class UserTest extends TestCase
     public function getToken()
     {
 
-        $users = factory(User::class)->create(['type_admin' => true]);
+        $users = factory(User::class)->create();
         $users->roles()->create($this->roles);
 
         $user = User::first();
@@ -92,6 +92,7 @@ class UserTest extends TestCase
 
         $response->assertJsonStructure([
             '_id',
+            'user_uuid',
             'name',
             'email',
             'active',
@@ -117,6 +118,7 @@ class UserTest extends TestCase
             '*' => [
 
                 '_id',
+                'user_uuid',
                 'name',
                 'email',
                 'active',
