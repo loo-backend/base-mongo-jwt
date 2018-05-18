@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 
-class UserStoreSeeder extends Seeder
+class UserTenantSeeder extends Seeder
 {
 
 
@@ -14,17 +14,17 @@ class UserStoreSeeder extends Seeder
     public function run()
     {
 
-        $this->storeAdmin();
-        $this->storeStaff();
-        $this->storeDevelop();
+        $this->tenantAdmin();
+        $this->tenantStaff();
+        $this->tenantDevelop();
 
     }
 
 
-    public function storeAdmin()
+    public function tenantAdmin()
     {
 
-        $roles = ['name' => 'STORE_ADMINISTRATOR',
+        $roles = ['name' => 'TENANT_ADMINISTRATOR',
             'permissions' => [
                 'ALL'
             ]
@@ -39,10 +39,10 @@ class UserStoreSeeder extends Seeder
     }
 
 
-    public function storeStaff()
+    public function tenantStaff()
     {
 
-        $roles = ['name' => 'STORE_STAFF',
+        $roles = ['name' => 'TENANT_STAFF',
             'permissions' => [
                 'BROWSER',
                 'READ',
@@ -59,10 +59,10 @@ class UserStoreSeeder extends Seeder
 
     }
 
-    public function storeDevelop()
+    public function tenantDevelop()
     {
 
-        $roles = ['name' => 'STORE_DEVELOP',
+        $roles = ['name' => 'TENANT_DEVELOP',
             'permissions' => [
                 'BROWSER',
                 'READ',

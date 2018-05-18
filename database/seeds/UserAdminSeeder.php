@@ -31,7 +31,7 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,5)->create(['is_admin' => true]);
+        $users = factory(App\User::class,5)->create(['is_administrator' => true]);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);

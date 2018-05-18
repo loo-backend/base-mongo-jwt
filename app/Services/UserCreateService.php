@@ -20,7 +20,7 @@ class UserCreateService
      * @var array
      */
     private $roles =
-        ['name' => 'ADMIN_STAFF_SUPPORT',
+        ['name' => 'TENANT_ADMINISTRATOR',
             'permissions' => [
                 'ALL'
             ]
@@ -40,6 +40,13 @@ class UserCreateService
 
         if (!empty($request['roles'])) {
             $this->roles = $request['roles'];
+        }
+
+        $collection = collect($this->roles);
+
+        $contains = $collection->contains('ADMINISTRATOR');
+        if($contains === false) {
+            unset($data['is_administrator']);
         }
 
         unset($data['roles']);
