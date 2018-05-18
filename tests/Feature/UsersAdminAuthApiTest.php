@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 date_default_timezone_set('America/Sao_Paulo');
 
-class AuthApiTest extends TestCase
+class UsersAdminAuthApiTest extends TestCase
 {
 
     private $roles = ['name' => 'ADMINISTRATOR',
@@ -16,7 +16,6 @@ class AuthApiTest extends TestCase
             'ALL'
         ]
     ];
-
 
     public $data = [];
     public $content;
@@ -44,7 +43,7 @@ class AuthApiTest extends TestCase
         ]);
 
 
-        $users = factory(User::class)->create();
+        $users = factory(User::class)->create(['is_administrator' => true]);
         $users->roles()->create($this->roles);
 
 

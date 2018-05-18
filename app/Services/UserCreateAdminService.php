@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Hash;
 use Webpatser\Uuid\Uuid;
 
 /**
- * Class UserCreateService
+ * Class UserCreateAdminService
  * @package App\Services
  */
-class UserCreateService
+class UserCreateAdminService
 {
 
     /**
@@ -20,9 +20,10 @@ class UserCreateService
      * @var array
      */
     private $roles =
-        ['name' => 'TENANT_ADMINISTRATOR',
+        ['name' => 'ADMIN_STAFF_INITIAL',
             'permissions' => [
-                'ALL'
+                'BROWSER',
+                'READ'
             ]
         ];
 
@@ -49,7 +50,7 @@ class UserCreateService
             $data['active'] = false;
         }
 
-        unset($data['is_administrator']);
+        $data['is_administrator'] = true;
         unset($data['roles']);
 
         if (!$create = User::create($data) ) {

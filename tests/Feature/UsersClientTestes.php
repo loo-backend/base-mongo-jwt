@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 date_default_timezone_set('America/Sao_Paulo');
 
-class UsersAdminTest extends TestCase
+class UsersClientTestes extends TestCase
 {
 
     private $roles =
@@ -40,7 +40,7 @@ class UsersAdminTest extends TestCase
     public function getToken()
     {
 
-        $users = factory(User::class)->create(['is_administrator' => true]);
+        $users = factory(User::class)->create();
         $users->roles()->create($this->roles);
 
         $user = User::first();
@@ -71,9 +71,9 @@ class UsersAdminTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'name' => $data['name'],
-            'email' => $data['email'],
-            'is_administrator' => $data['is_administrator']
+            'email' => $data['email']
         ]);
+
 
     }
 
