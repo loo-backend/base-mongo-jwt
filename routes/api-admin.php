@@ -1,5 +1,5 @@
 <?php
 
-$this->resource('users', 'UsersController')->except([
+$this->resource('users', 'UsersAdminController')->except([
     'create', 'edit'
 ]);
