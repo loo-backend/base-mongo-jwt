@@ -16,7 +16,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTFactory;
 
 
-class UsersController extends Controller
+class UsersTenantController extends Controller
 {
 
 

@@ -7,11 +7,11 @@ use Tests\TestCase;
 
 date_default_timezone_set('America/Sao_Paulo');
 
-class UsersClientTestes extends TestCase
+class UsersTenantTest extends TestCase
 {
 
     private $roles =
-        ['name' => 'ADMINISTRATOR',
+        ['name' => 'TENANT_ADMINISTRATOR',
             'permissions' => [
                 'ALL'
             ]
@@ -29,7 +29,6 @@ class UsersClientTestes extends TestCase
             'name' => str_random(10),
             'email' => str_random(6) . '@mail.com',
             'active' => true,
-            'is_administrator' => true,
             'password' => 'secret',
             'password_confirmation' => 'secret',
         ];
