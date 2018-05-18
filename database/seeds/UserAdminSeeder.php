@@ -18,6 +18,7 @@ class UserAdminSeeder extends Seeder
         $this->staffSupport();
         $this->staffFinance();
         $this->staffCommercial();
+        $this->staffInitial();
 
     }
 
@@ -101,7 +102,7 @@ class UserAdminSeeder extends Seeder
     }
 
 
-    public function staffCommercial()
+    public function staffInitial()
     {
 
         $roles = ['name' => 'ADMIN_STAFF_INITIAL',
