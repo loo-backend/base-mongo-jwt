@@ -3,15 +3,25 @@
 namespace Tests\Feature;
 
 use App\User;
+use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
+
+date_default_timezone_set('America/Sao_Paulo');
 
 class AuthApiTest extends TestCase
 {
 
+    private $roles = ['name' => 'ADMINISTRATOR',
+        'permissions' => [
+            'ALL'
+        ]
+    ];
+
+
     public $data = [];
     public $content;
 
-    public function __construct(?string $name = null, array $data = [], string $dataName = '')
+    public function __construct(string $name = null, array $data = [], string $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
@@ -27,7 +37,14 @@ class AuthApiTest extends TestCase
     public function getToken()
     {
 
-        factory(User::class)->create();
+        Artisan::call('migrate', [
+            '--path' => "app/database/migrations"
+        ]);
+
+
+        $users = factory(User::class)->create(['type_admin' => true]);
+        $users->roles()->create($this->roles);
+
 
         $user = User::first();
 
@@ -43,7 +60,6 @@ class AuthApiTest extends TestCase
 
     public function testUserCreate()
     {
-
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),

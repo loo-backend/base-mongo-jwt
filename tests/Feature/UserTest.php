@@ -5,12 +5,22 @@ namespace Tests\Feature;
 use App\User;
 use Tests\TestCase;
 
+date_default_timezone_set('America/Sao_Paulo');
+
 class UserTest extends TestCase
 {
 
+    private $roles =
+        ['name' => 'ADMINISTRATOR',
+            'permissions' => [
+                'ALL'
+            ]
+        ];
+
+
     public $data = [];
 
-    public function __construct(?string $name = null, array $data = [], string $dataName = '')
+    public function __construct(string $name = null, array $data = [], string $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
@@ -28,7 +38,8 @@ class UserTest extends TestCase
     public function getToken()
     {
 
-        factory(User::class)->create();
+        $users = factory(User::class)->create(['type_admin' => true]);
+        $users->roles()->create($this->roles);
 
         $user = User::first();
 
@@ -45,16 +56,22 @@ class UserTest extends TestCase
     public function testUserCreate()
     {
 
+
+        $data = $this->data;
+        $data['roles'] = $this->roles;
+
+
         $response = $this->withHeaders([
             'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('POST', '/admin/users', $this->data);
+        ])->json('POST', '/admin/users', $data);
 
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('users', [
-            'name' => $this->data['name'],
-            'email' => $this->data['email']
+            'name' => $data['name'],
+            'email' => $data['email']
         ]);
+
 
     }
 

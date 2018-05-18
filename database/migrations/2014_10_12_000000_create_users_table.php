@@ -6,6 +6,9 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateUsersTable extends Migration
 {
+
+    protected $connection = 'mongodb';
+
     /**
      * Run the migrations.
      *
@@ -13,14 +16,25 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+
+        Schema::connection($this->connection)
+        ->table('users', function (Blueprint $table)
+        {
             $table->increments('id');
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('remember_token');
+            $table->boolean('type_admin')->default(false);
+            $table->boolean('type_store')->default(true);
+            $table->boolean('active')->default(false);
+            $table->uuid('uuid');
+            $table->jsonb('roles');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
+
     }
 
     /**
@@ -30,6 +44,13 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+
+        Schema::connection($this->connection)
+        ->table('users', function (Blueprint $table)
+        {
+            $table->dropIndex();
+            $table->drop();
+        });
+
     }
 }

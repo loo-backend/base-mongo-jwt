@@ -14,13 +14,24 @@ class User extends Authenticatable implements JWTSubject
 
     use SoftDeletes, Notifiable;
 
+    public $table = 'users';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'roles', 'uuid',
+        'name',
+        'email',
+        'password',
+        'remember_token',
+        'type_admin',
+        'type_store',
+        'type_user',
+        'sactive',
+        'roles',
+        'uuid',
     ];
 
     /**
