@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 date_default_timezone_set('America/Sao_Paulo');
 
-class UsersClientTestes extends TestCase
+class UsersTenantTest extends TestCase
 {
 
     private $roles =

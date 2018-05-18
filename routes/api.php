@@ -5,6 +5,8 @@ $this->resource('admins', 'UsersAdminController')->except([
 ]);
 
 
-$this->resource('clients', 'UsersController')->except([
-    'create', 'edit'
+$this->post('tenants', 'UsersTenantController@store')->name('tenants.store');
+
+$this->resource('tenants', 'UsersTenantController')->except([
+    'store', 'create', 'edit'
 ]);
