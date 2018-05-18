@@ -40,13 +40,16 @@ class UserCreateService
 
         if (!empty($request['roles'])) {
             $this->roles = $request['roles'];
-
         }
 
         unset($data['roles']);
 
         $data['password'] = Hash::make($request->all()['password']);
         $data['uuid'] = Uuid::generate(4)->string;
+
+        if (!isset($request['active'])) {
+            $data['active'] = false;
+        }
 
         if (!$create = User::create($data) ) {
             return false;

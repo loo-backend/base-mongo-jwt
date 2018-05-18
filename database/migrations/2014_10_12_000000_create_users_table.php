@@ -25,8 +25,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('remember_token');
-            $table->boolean('type_admin')->default(false);
-            $table->boolean('type_store')->default(true);
+            $table->enum('type')->default('USER');
             $table->boolean('active')->default(false);
             $table->uuid('uuid');
             $table->jsonb('roles');

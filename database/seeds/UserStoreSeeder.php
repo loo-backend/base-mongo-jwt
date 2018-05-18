@@ -30,7 +30,7 @@ class UserStoreSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,5)->create(['type_store' => true]);
+        $users = factory(App\User::class,5)->create();
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
@@ -51,7 +51,7 @@ class UserStoreSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create(['type_store' => true]);
+        $users = factory(App\User::class,50)->create();
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
@@ -71,7 +71,7 @@ class UserStoreSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create(['type_store' => true]);
+        $users = factory(App\User::class,50)->create();
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);

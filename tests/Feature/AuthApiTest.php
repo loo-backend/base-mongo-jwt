@@ -28,6 +28,8 @@ class AuthApiTest extends TestCase
         $this->data = [
             'name' => str_random(10),
             'email' => str_random(6) . '@mail.com',
+            'active' => true,
+            'type' => 'ADMIN',
             'password' => 'secret',
             'password_confirmation' => 'secret',
         ];

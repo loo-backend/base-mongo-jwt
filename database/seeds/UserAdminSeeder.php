@@ -31,7 +31,7 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,5)->create(['type_admin' => true]);
+        $users = factory(App\User::class,5)->create(['type' => 'ADMIN']);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
@@ -52,7 +52,7 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create(['type_admin' => true]);
+        $users = factory(App\User::class,50)->create(['type' => 'ADMIN']);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
@@ -72,7 +72,7 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create(['type_admin' => true]);
+        $users = factory(App\User::class,50)->create(['type' => 'ADMIN']);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
@@ -92,7 +92,7 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create(['type_admin' => true]);
+        $users = factory(App\User::class,50)->create(['type' => 'ADMIN']);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
