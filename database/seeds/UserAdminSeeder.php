@@ -52,7 +52,7 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create();
+        $users = factory(App\User::class,50)->create(['is_administrator' => true]);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
@@ -72,7 +72,7 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create();
+        $users = factory(App\User::class,50)->create(['is_administrator' => true]);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);
@@ -92,7 +92,26 @@ class UserAdminSeeder extends Seeder
             ]
         ];
 
-        $users = factory(App\User::class,50)->create();
+        $users = factory(App\User::class,50)->create(['is_administrator' => true]);
+
+        $users->each(function ($user) use($roles) {
+            $user->roles()->create($roles);
+        });
+
+    }
+
+
+    public function staffCommercial()
+    {
+
+        $roles = ['name' => 'ADMIN_STAFF_INITIAL',
+            'permissions' => [
+                'BROWSER',
+                'READ'
+            ]
+        ];
+
+        $users = factory(App\User::class,50)->create(['is_administrator' => true]);
 
         $users->each(function ($user) use($roles) {
             $user->roles()->create($roles);

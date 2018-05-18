@@ -13,11 +13,9 @@ class UserTenantSeeder extends Seeder
      */
     public function run()
     {
-
         $this->tenantAdmin();
         $this->tenantStaff();
         $this->tenantDevelop();
-
     }
 
 
@@ -42,7 +40,7 @@ class UserTenantSeeder extends Seeder
     public function tenantStaff()
     {
 
-        $roles = ['name' => 'TENANT_STAFF',
+        $roles = ['name' => 'TENANT_EDITOR',
             'permissions' => [
                 'BROWSER',
                 'READ',

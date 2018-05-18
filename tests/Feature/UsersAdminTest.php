@@ -190,22 +190,22 @@ class UsersAdminTest extends TestCase
     public function testDeleteUser()
     {
 
-        // $user_all = User::all();
+        $user_all = User::all();
 
-        // foreach ($user_all as $u) {
-        //     User::find($u->id)->forceDelete();
-        // }
+        foreach ($user_all as $u) {
+            User::find($u->id)->forceDelete();
+        }
 
-        // $user =  factory(User::class)->create()->first();
+        $user =  factory(User::class)->create()->first();
 
-        // $response = $this->withHeaders([
-        //     'Authorization' => 'Bearen '. $this->getToken(),
-        // ])->json('DELETE', '/users/admins/'.$user->id);
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearen '. $this->getToken(),
+        ])->json('DELETE', '/users/admins/'.$user->id);
 
-        // $response->assertStatus(200)
-        //         ->assertExactJson([
-        //             'response' => 'user_removed'
-        //         ]);
+        $response->assertStatus(200)
+                ->assertExactJson([
+                    'response' => 'user_removed'
+                ]);
 
 
     }

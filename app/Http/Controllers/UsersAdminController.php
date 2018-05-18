@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\UserAllService;
-use App\Services\UserCreateService;
+use App\Services\UserCreateAdminService;
 use App\Services\UserFindService;
 use App\Services\UserRemoveService;
 use App\Services\UserUpdateService;
@@ -21,9 +21,9 @@ class UsersAdminController extends Controller
 
 
     /**
-     * @var UserCreateService
+     * @var UserCreateAdminService
      */
-    private $createService;
+    private $createAdminService;
 
     /**
      * @var UserFindService
@@ -47,20 +47,20 @@ class UsersAdminController extends Controller
 
     /**
      * UsersController constructor.
-     * @param UserCreateService $createService
+     * @param UserCreateAdminService $createAdminService
      * @param UserFindService $findService
      * @param UserAllService $allService
      * @param UserRemoveService $removeService
      * @param UserUpdateService $updateService
      */
-    public function __construct(UserCreateService $createService,
+    public function __construct(UserCreateAdminService $createAdminService,
                                 UserFindService $findService,
                                 UserAllService $allService,
                                 UserRemoveService $removeService,
                                 UserUpdateService $updateService)
     {
 
-        $this->createService = $createService;
+        $this->createAdminService = $createAdminService;
         $this->findService = $findService;
         $this->allService = $allService;
         $this->removeService = $removeService;
@@ -103,7 +103,7 @@ class UsersAdminController extends Controller
             'password' => 'required|string|confirmed|min:6|max:255'
         ]);
 
-        if (!$result = $this->createService->create($request)) {
+        if (!$result = $this->createAdminService->create($request)) {
 
             return response()->json(['error' => 'user_not_created'], 500);
         }
