@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTFactory;
+use Validator;
 
 
 class UsersTenantController extends Controller
@@ -97,14 +98,23 @@ class UsersTenantController extends Controller
     public function store(Request $request)
     {
 
-        $this->validate($request,[
+
+        // if(isset($request->all()['password'])){
+        //     $request->all()['password'] = 'required|confirmed|max:255';
+        // }
+
+        $validation = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users|max:255',
             'password' => 'required|string|confirmed|min:6|max:255'
         ]);
 
-        if (!$result = $this->createService->create($request)) {
+        if($validation->fails()){
+            $errors = $validation->errors();
+            return $errors->toJson();
+        }
 
+        if (!$result = $this->createService->create($request)) {
             return response()->json(['error' => 'user_not_created'], 500);
         }
 
@@ -141,23 +151,19 @@ class UsersTenantController extends Controller
     public function update(Request $request, $id)
     {
 
-        $validation = [
+        $validation = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => [
                 'required',
-                'string',
-                Rule::unique('users', '_id')->ignore($id),
-                'max:255'
-            ]
-        ];
+                Rule::unique('users','_id')->ignore($id),
+            ],
+            'password' => 'sometimes|required|confirmed|min:6|max:255'
+        ]);
 
-
-        if(isset($request->all()['password'])){
-            $validation['password'] = 'required|confirmed|max:255';
+        if($validation->fails()){
+            $errors = $validation->errors();
+            return $errors->toJson();
         }
-
-        $this->validate($request, $validation);
-
 
         if (!$result = $this->findService->findBy($id)) {
             return response()->json(['error' => 'user_not_found'], 422);
@@ -167,7 +173,6 @@ class UsersTenantController extends Controller
 
             return response()->json(['error' => 'user_not_updated'], 422);
         }
-
 
         return response()->json($result,200);
 
@@ -186,7 +191,6 @@ class UsersTenantController extends Controller
         if (!$result = $this->findService->findBy($id)) {
             return response()->json(['error' => 'user_not_found'], 422);
         }
-
 
         if (!$result = $this->removeService->remove($id)) {
 
