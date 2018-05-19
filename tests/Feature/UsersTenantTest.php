@@ -61,16 +61,27 @@ class UsersTenantTest extends TestCase
         $data = $this->data;
         $data['roles'] = $this->roles;
 
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('POST', '/users/admins', $data);
+        $response = $this->post('/users/tenants', $data);
 
         $response->assertStatus(200);
+
 
         $this->assertDatabaseHas('users', [
             'name' => $data['name'],
             'email' => $data['email']
+        ]);
+
+        $response->assertJsonStructure([
+            '_id',
+            'user_uuid',
+            'name',
+            'email',
+            'active',
+            'roles' => [
+                '*' => [
+                    'name', 'permissions'
+                ]
+            ]
         ]);
 
 
@@ -83,8 +94,8 @@ class UsersTenantTest extends TestCase
         $user = User::first();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('GET', '/users/admins/'. $user->id);
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+        ])->json('GET', '/users/tenants/'. $user->id);
 
 
         $response->assertStatus(200);
@@ -108,8 +119,8 @@ class UsersTenantTest extends TestCase
     {
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('GET', '/users/admins');
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+        ])->json('GET', '/users/tenants');
 
         $response->assertStatus(200);
 
@@ -144,8 +155,8 @@ class UsersTenantTest extends TestCase
         ];
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('PUT', '/users/admins/'.$user->id, $data);
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+        ])->json('PUT', '/users/tenants/'.$user->id, $data);
 
 
         $response->assertStatus(200);
@@ -172,8 +183,8 @@ class UsersTenantTest extends TestCase
 
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('PUT', '/users/admins/'.$user->id, $data);
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+        ])->json('PUT', '/users/tenants/'.$user->id, $data);
 
 
         $response->assertStatus(200);
@@ -198,8 +209,8 @@ class UsersTenantTest extends TestCase
         $user =  factory(User::class)->create()->first();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
-        ])->json('DELETE', '/users/admins/'.$user->id);
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+        ])->json('DELETE', '/users/tenants/'.$user->id);
 
         $response->assertStatus(200)
                 ->assertExactJson([

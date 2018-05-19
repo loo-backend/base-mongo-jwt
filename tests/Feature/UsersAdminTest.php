@@ -58,13 +58,11 @@ class UsersAdminTest extends TestCase
     public function testUserCreate()
     {
 
-
         $data = $this->data;
         $data['roles'] = $this->roles;
 
-
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
         ])->json('POST', '/users/admins', $data);
 
         $response->assertStatus(200);
@@ -84,7 +82,7 @@ class UsersAdminTest extends TestCase
         $user = User::first();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
         ])->json('GET', '/users/admins/'. $user->id);
 
 
@@ -109,7 +107,7 @@ class UsersAdminTest extends TestCase
     {
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
         ])->json('GET', '/users/admins');
 
         $response->assertStatus(200);
@@ -145,7 +143,7 @@ class UsersAdminTest extends TestCase
         ];
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
         ])->json('PUT', '/users/admins/'.$user->id, $data);
 
 
@@ -173,7 +171,7 @@ class UsersAdminTest extends TestCase
 
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
         ])->json('PUT', '/users/admins/'.$user->id, $data);
 
 
@@ -199,7 +197,7 @@ class UsersAdminTest extends TestCase
         $user =  factory(User::class)->create()->first();
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
         ])->json('DELETE', '/users/admins/'.$user->id);
 
         $response->assertStatus(200)

@@ -63,7 +63,7 @@ class UsersAdminAuthApiTest extends TestCase
     {
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearen '. $this->getToken(),
+            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
         ])->json('POST', '/users/admins', $this->data);
 
         $response->assertStatus(200);
