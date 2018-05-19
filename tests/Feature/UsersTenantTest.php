@@ -57,7 +57,6 @@ class UsersTenantTest extends TestCase
     public function testUserCreate()
     {
 
-
         $data = $this->data;
         $data['roles'] = $this->roles;
 
@@ -65,25 +64,29 @@ class UsersTenantTest extends TestCase
 
         $response->assertStatus(200);
 
-
         $this->assertDatabaseHas('users', [
             'name' => $data['name'],
             'email' => $data['email']
         ]);
 
         $response->assertJsonStructure([
-            '_id',
-            'user_uuid',
-            'name',
-            'email',
-            'active',
-            'roles' => [
-                '*' => [
-                    'name', 'permissions'
+            'success',
+            'data' => [
+                '_id',
+                'user_uuid',
+                'name',
+                'email',
+                'active',
+                'roles' => [
+                    '*' => [
+                        'name', 'permissions'
+                    ]
                 ]
-            ]
-        ]);
 
+            ],
+            'token'
+
+        ]);
 
     }
 

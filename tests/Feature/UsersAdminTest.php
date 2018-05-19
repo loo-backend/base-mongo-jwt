@@ -73,6 +73,26 @@ class UsersAdminTest extends TestCase
             'is_administrator' => $data['is_administrator']
         ]);
 
+        $response->assertJsonStructure([
+            'success',
+            'data' => [
+                '_id',
+                'user_uuid',
+                'name',
+                'email',
+                'active',
+                'is_administrator',
+                'roles' => [
+                    '*' => [
+                        'name', 'permissions'
+                    ]
+                ]
+
+            ],
+            'token'
+
+        ]);
+
     }
 
 

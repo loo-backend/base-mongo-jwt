@@ -113,7 +113,39 @@ class UsersAdminController extends Controller
             return response()->json(['error' => 'user_not_created'], 500);
         }
 
-        return response()->json($result, 200);
+        $credentials = $request->only('email', 'password');
+
+
+        try {
+
+            // attempt to verify the credentials and create a token for the user
+            if (! $token = JWTAuth::attempt($credentials)) {
+
+                  return response()->json([
+                    'success' => false,
+                    'data'=> '',
+                    'error' => 'invalid_credentials'
+                ], 401);
+            }
+
+        } catch (JWTException $e) {
+
+            // something went wrong whilst attempting to encode the token
+            return response()->json([
+                'success' => false,
+                'data'=> '',
+                'error' => 'could_not_create_token'
+            ], 500);
+
+        }
+
+        $data = [
+            'success' => true,
+            'data' => $result,
+            'token' => $token
+        ];
+
+        return response()->json($data, 200);
 
     }
 
