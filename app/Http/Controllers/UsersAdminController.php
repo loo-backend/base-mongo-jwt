@@ -150,7 +150,7 @@ class UsersAdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => [
                 'required',
-                Rule::unique('users','_id')->ignore($id),
+                Rule::unique('users','_Sid')->ignore($id),
             ],
             'password' => 'sometimes|required|confirmed|min:6|max:255'
         ]);
@@ -159,7 +159,6 @@ class UsersAdminController extends Controller
             $errors = $validation->errors();
             return $errors->toJson();
         }
-
 
         if (!$result = $this->findService->findBy($id)) {
             return response()->json(['error' => 'user_not_found'], 422);
