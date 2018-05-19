@@ -2,30 +2,26 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Factories\JWTTokenBearerFactory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Factories\JWTTokenBearerFactory;
-
-use App\Services\UserWhereFirstService;
 use JWTAuth;
 use JWTFactory;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthApiController extends Controller
 {
     /**
      * @var JWTTokenBearerFactory
      */
-    private $factory;
+    private $bearerFactory;
 
     /**
      * AuthApiController constructor.
-     * @param JWTTokenBearerFactory $factory
+     * @param JWTTokenBearerFactory $bearerFactory
      */
-    public function __construct(JWTTokenBearerFactory $factory)
+    public function __construct(JWTTokenBearerFactory $bearerFactory)
     {
-
-        $this->factory = $factory;
+        $this->bearerFactory = $bearerFactory;
     }
 
     /**
@@ -39,34 +35,21 @@ class AuthApiController extends Controller
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
 
-        try {
+        if (!$token = JWTAuth::attempt($credentials)) {
 
-            // attempt to verify the credentials and create a token for the user
-            if (! $token = JWTAuth::attempt($credentials)) {
-
-                  return response()->json([
-                    'success' => false,
-                    'error' => 'invalid_credentials'
-                ], 401);
-            }
-
-        } catch (JWTException $e) {
-
-            // something went wrong whilst attempting to encode the token
             return response()->json([
                 'success' => false,
-                'error' => 'could_not_create_token'
-            ], 500);
-
+                'error' => 'invalid_credentials'
+            ], 401);
         }
 
 
-        $token = $this->factory->generate($request);
+        $token = $this->bearerFactory->generate($request);
 
         //Authorization || HTTP_Authorization
         return response()->json([
             'success' => true,
-            'HTTP_Authorization' => "Bearer {$token}"
+            'HTTP_Authorization' => $token
         ], 200);
 
 

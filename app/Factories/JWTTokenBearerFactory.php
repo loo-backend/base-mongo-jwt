@@ -7,6 +7,10 @@ use App\Services\UserWhereFirstService;
 use JWTAuth;
 use JWTFactory;
 
+/**
+ * Class JWTTokenBearerFactory
+ * @package App\Factories
+ */
 class JWTTokenBearerFactory {
 
     /**
@@ -25,6 +29,10 @@ class JWTTokenBearerFactory {
     }
 
 
+    /**
+     * @param Request $request
+     * @return string
+     */
     public function generate(Request $request)
     {
 
@@ -37,7 +45,9 @@ class JWTTokenBearerFactory {
 
         $payload = $factory->make();
 
-        return JWTAuth::encode($payload);
+        $token = JWTAuth::encode($payload);
+
+        return "Bearer {$token}";
 
     }
 
