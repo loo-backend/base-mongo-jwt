@@ -51,7 +51,7 @@ class UsersAdminTest extends TestCase
 
         $data = (array) json_decode( $response->content() );
 
-        return $data['token'];
+        return $data['HTTP_Authorization'];
 
     }
 
@@ -62,7 +62,7 @@ class UsersAdminTest extends TestCase
         $data['roles'] = $this->roles;
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('POST', '/users/admins', $data);
 
         $response->assertStatus(200);
@@ -75,22 +75,7 @@ class UsersAdminTest extends TestCase
 
         $response->assertJsonStructure([
             'success',
-            'data' => [
-                '_id',
-                'user_uuid',
-                'name',
-                'email',
-                'active',
-                'is_administrator',
-                'roles' => [
-                    '*' => [
-                        'name', 'permissions'
-                    ]
-                ]
-
-            ],
-            'token'
-
+            'HTTP_Authorization'
         ]);
 
     }
@@ -102,7 +87,7 @@ class UsersAdminTest extends TestCase
         $user = User::first();
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('GET', '/users/admins/'. $user->id);
 
 
@@ -127,7 +112,7 @@ class UsersAdminTest extends TestCase
     {
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('GET', '/users/admins');
 
         $response->assertStatus(200);
@@ -158,12 +143,11 @@ class UsersAdminTest extends TestCase
 
         $data = [
             'name' => str_random(12),
-            'email' => $user->email,
-            'token' => $this->getToken()
+            'email' => $user->email
         ];
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('PUT', '/users/admins/'.$user->id, $data);
 
 
@@ -185,13 +169,12 @@ class UsersAdminTest extends TestCase
             'name' => str_random(12),
             'email' => str_random(7) . '@mail.com',
             'password' => 123456,
-            'password_confirmation' => 123456,
-            'token' => $this->getToken()
+            'password_confirmation' => 123456
         ];
 
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('PUT', '/users/admins/'.$user->id, $data);
 
 
@@ -217,7 +200,7 @@ class UsersAdminTest extends TestCase
         $user =  factory(User::class)->create()->first();
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('DELETE', '/users/admins/'.$user->id);
 
         $response->assertStatus(200)

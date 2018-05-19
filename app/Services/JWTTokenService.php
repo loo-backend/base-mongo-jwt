@@ -10,15 +10,12 @@ class JWTTokenService {
             ])
         ]);
 
+
         $payload = $factory->make();
+
         $token = JWTAuth::encode($payload);
 
-        //Authorization || HTTP_Authorization
-        return $token;
-        // return response()->json([
-        //     'success' => true,
-        //     'token' => "Bearer {$token}",
-        // ], 200);
+        return ['HTTP_Authorization' => "Bearer {$token}"];
 
     }
 

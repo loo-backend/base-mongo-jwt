@@ -16,6 +16,10 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTFactory;
 use Validator;
 
+use App\Services\UserWhereFirstService;
+
+
+
 class UsersAdminController extends Controller
 {
 
@@ -46,6 +50,11 @@ class UsersAdminController extends Controller
     private $updateService;
 
     /**
+     * @var UserWhereFirstService
+     */
+    private $whereFirstService;
+
+    /**
      * UsersController constructor.
      * @param UserCreateAdminService $createAdminService
      * @param UserFindService $findService
@@ -57,7 +66,8 @@ class UsersAdminController extends Controller
                                 UserFindService $findService,
                                 UserAllService $allService,
                                 UserRemoveService $removeService,
-                                UserUpdateService $updateService)
+                                UserUpdateService $updateService,
+                                UserWhereFirstService $whereFirstService)
     {
 
         $this->createAdminService = $createAdminService;
@@ -65,6 +75,7 @@ class UsersAdminController extends Controller
         $this->allService = $allService;
         $this->removeService = $removeService;
         $this->updateService = $updateService;
+        $this->whereFirstService = $whereFirstService;
     }
 
 
@@ -139,13 +150,21 @@ class UsersAdminController extends Controller
 
         }
 
-        $data = [
-            'success' => true,
-            'data' => $result,
-            'token' => $token
-        ];
+        $user = $this->whereFirstService->whereFirst(['email' => $request->input('email')]);
 
-        return response()->json($data, 200);
+        $factory = JWTFactory::customClaims([
+            'sub' => $user
+        ]);
+
+        $payload = $factory->make();
+
+        $token = JWTAuth::encode($payload);
+
+        //Authorization || HTTP_Authorization
+        return response()->json([
+            'success' => true,
+            'HTTP_Authorization' => "Bearer {$token}"
+        ], 200);
 
     }
 

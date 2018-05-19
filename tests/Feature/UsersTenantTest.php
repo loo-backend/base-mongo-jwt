@@ -50,7 +50,7 @@ class UsersTenantTest extends TestCase
 
         $data = (array) json_decode( $response->content() );
 
-        return $data['token'];
+        return $data['HTTP_Authorization'];
 
     }
 
@@ -71,21 +71,7 @@ class UsersTenantTest extends TestCase
 
         $response->assertJsonStructure([
             'success',
-            'data' => [
-                '_id',
-                'user_uuid',
-                'name',
-                'email',
-                'active',
-                'roles' => [
-                    '*' => [
-                        'name', 'permissions'
-                    ]
-                ]
-
-            ],
-            'token'
-
+            'HTTP_Authorization'
         ]);
 
     }
@@ -97,7 +83,7 @@ class UsersTenantTest extends TestCase
         $user = User::first();
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('GET', '/users/tenants/'. $user->id);
 
 
@@ -122,7 +108,7 @@ class UsersTenantTest extends TestCase
     {
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('GET', '/users/tenants');
 
         $response->assertStatus(200);
@@ -153,12 +139,11 @@ class UsersTenantTest extends TestCase
 
         $data = [
             'name' => str_random(12),
-            'email' => $user->email,
-            'token' => $this->getToken()
+            'email' => $user->email
         ];
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('PUT', '/users/tenants/'.$user->id, $data);
 
 
@@ -180,13 +165,12 @@ class UsersTenantTest extends TestCase
             'name' => str_random(12),
             'email' => str_random(7) . '@mail.com',
             'password' => 123456,
-            'password_confirmation' => 123456,
-            'token' => $this->getToken()
+            'password_confirmation' => 123456
         ];
 
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('PUT', '/users/tenants/'.$user->id, $data);
 
 
@@ -212,7 +196,7 @@ class UsersTenantTest extends TestCase
         $user =  factory(User::class)->create()->first();
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('DELETE', '/users/tenants/'.$user->id);
 
         $response->assertStatus(200)

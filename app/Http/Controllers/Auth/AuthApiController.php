@@ -3,27 +3,29 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Services\UserWhereFirstService;
 use Illuminate\Http\Request;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Factories\JWTTokenBearerFactory;
 
+use App\Services\UserWhereFirstService;
+use JWTAuth;
+use JWTFactory;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthApiController extends Controller
 {
     /**
-     * @var UserWhereFirstService
+     * @var JWTTokenBearerFactory
      */
-    private $whereFirstService;
+    private $factory;
 
     /**
      * AuthApiController constructor.
-     * @param UserWhereFirstService $whereFirstService
+     * @param JWTTokenBearerFactory $factory
      */
-    public function __construct(UserWhereFirstService $whereFirstService)
+    public function __construct(JWTTokenBearerFactory $factory)
     {
 
-        $this->whereFirstService = $whereFirstService;
+        $this->factory = $factory;
     }
 
     /**
@@ -58,12 +60,15 @@ class AuthApiController extends Controller
 
         }
 
-        // all good so return the token
+
+        $token = $this->factory->generate($request);
+
+        //Authorization || HTTP_Authorization
         return response()->json([
             'success' => true,
-            'token' => $token,
-            'data'=> $this->whereFirstService->whereFirst(['email' => $request->input('email')])
+            'HTTP_Authorization' => "Bearer {$token}"
         ], 200);
+
 
     }
 

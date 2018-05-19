@@ -55,7 +55,7 @@ class UsersAdminAuthApiTest extends TestCase
 
         $data = (array) json_decode( $response->content() );
 
-        return $data['token'];
+        return $data['HTTP_Authorization'];
 
     }
 
@@ -63,7 +63,7 @@ class UsersAdminAuthApiTest extends TestCase
     {
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
+            'HTTP_Authorization' => $this->getToken(),
         ])->json('POST', '/users/admins', $this->data);
 
         $response->assertStatus(200);
@@ -86,8 +86,7 @@ class UsersAdminAuthApiTest extends TestCase
             ->assertStatus(200);
 
         $response->assertJson(['success' => true]);
-        $response->assertJson(['token' => true]);
-        $response->assertJson(['data' => true]);
+        $response->assertJson(['HTTP_Authorization' => true]);
 
     }
 
