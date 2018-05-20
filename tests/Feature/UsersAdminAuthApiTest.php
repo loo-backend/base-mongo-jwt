@@ -35,38 +35,26 @@ class UsersAdminAuthApiTest extends TestCase
 
     }
 
-    public function getToken()
-    {
-
-        Artisan::call('migrate', [
-            '--path' => "app/database/migrations"
-        ]);
-
-
-        $users = factory(User::class)->create(['is_administrator' => true]);
-        $users->roles()->create($this->roles);
-
-
-        $user = User::first();
-
-        $response = $this->post('/auth/authenticate',
-            ['email'=>$user->email,'password' => $this->data['password']])
-            ->assertStatus(200);
-
-        $data = (array) json_decode( $response->content() );
-
-        return $data['HTTP_Authorization'];
-
-    }
 
     public function testUserCreate()
     {
 
-        $response = $this->withHeaders([
-            'HTTP_Authorization' => $this->getToken(),
-        ])->json('POST', '/users/admins', $this->data);
 
-        $response->assertStatus(200);
+        $users = factory(User::class)->create(['is_administrator' => true]);
+        $users->roles()->create($this->roles);
+        $user = User::first();
+
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
+
+
+        $headers = [
+            'Accept'        => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
+
+        $this->post('/users/admins', $this->data, $headers)
+                ->assertStatus(200);
+
 
         $this->assertDatabaseHas('users', [
             'name' => $this->data['name'],
@@ -79,8 +67,6 @@ class UsersAdminAuthApiTest extends TestCase
     public function testUserAuthenticateValid() {
 
         $user = User::first();
-
-
         $response = $this->post('/auth/authenticate',
                 ['email'=>$user->email,'password' => $this->data['password']])
             ->assertStatus(200);
@@ -94,7 +80,6 @@ class UsersAdminAuthApiTest extends TestCase
     public function testUserAuthenticateInvalid() {
 
         $user = User::first();
-
         $response = $this->post('/auth/authenticate',
                 ['email'=>$user->email,'password' => str_random(6)])
             ->assertStatus(401);

@@ -106,6 +106,8 @@ class UsersAdminController extends Controller
     public function store(Request $request)
     {
 
+
+
         $validation = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users|max:255',
@@ -116,6 +118,7 @@ class UsersAdminController extends Controller
             $errors = $validation->errors();
             return $errors->toJson();
         }
+
 
         if (!$result = $this->createAdminService->create($request)) {
 

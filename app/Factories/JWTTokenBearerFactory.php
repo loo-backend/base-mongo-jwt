@@ -36,6 +36,7 @@ class JWTTokenBearerFactory {
     public function generate(Request $request)
     {
 
+
         $user = $this->whereFirstService
             ->whereFirst(['email' => $request->input('email')]);
 
@@ -45,9 +46,7 @@ class JWTTokenBearerFactory {
 
         $payload = $factory->make();
 
-        $token = JWTAuth::encode($payload);
-
-        return "Bearer {$token}";
+        return (string) JWTAuth::encode($payload);
 
     }
 
