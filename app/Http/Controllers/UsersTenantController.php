@@ -117,8 +117,10 @@ class UsersTenantController extends Controller
         }
 
         if (!$result = $this->createService->create($request)) {
+
             return response()->json(['error' => 'user_not_created'], 500);
         }
+
 
         $credentials = $request->only('email', 'password');
 

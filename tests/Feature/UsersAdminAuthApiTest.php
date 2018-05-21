@@ -73,7 +73,7 @@ class UsersAdminAuthApiTest extends TestCase
 
         $user = User::where('is_administrator', true)->first();
         $response = $this->post('/auth/authenticate',
-                ['email'=>  $user->email, 'password' => 123456])
+                ['email'=>  $user->email, 'password' => $this->data['password']])
             ->assertStatus(200);
 
         $response->assertJson(['success' => true]);

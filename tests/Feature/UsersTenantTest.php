@@ -66,7 +66,6 @@ class UsersTenantTest extends TestCase
         $response = $this->post('/users/tenants', $data, $headers)
             ->assertStatus(200);
 
-
         $this->assertDatabaseHas('users', [
             'name' => $data['name'],
             'email' => $data['email'],
@@ -96,19 +95,15 @@ class UsersTenantTest extends TestCase
 
 
         $response->assertJsonStructure([
-            'data' => [
-
-                '_id',
-                'user_uuid',
-                'name',
-                'email',
-                'active',
-                'roles' => [
-                    '*' => [
-                        'name', 'permissions'
-                    ]
+            '_id',
+            'user_uuid',
+            'name',
+            'email',
+            'active',
+            'roles' => [
+                '*' => [
+                    'name', 'permissions'
                 ]
-
             ]
         ]);
 
