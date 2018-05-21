@@ -58,7 +58,7 @@ class UsersAdminTest extends TestCase
         $data['roles'] = $this->roles;
 
 
-        $user = User::first();
+        $user = User::where('is_administrator', true)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
         $headers = [
@@ -87,8 +87,7 @@ class UsersAdminTest extends TestCase
     public function testShowUser()
     {
 
-
-        $user = User::first();
+        $user = User::where('is_administrator', true)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
         $headers = [
@@ -106,6 +105,7 @@ class UsersAdminTest extends TestCase
             'name',
             'email',
             'active',
+            'is_administrator',
             'roles' => [
                 '*' => [
                     'name', 'permissions'
@@ -118,7 +118,7 @@ class UsersAdminTest extends TestCase
     public function testAllUsers()
     {
 
-        $user = User::first();
+        $user = User::where('is_administrator', true)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
         $headers = [
@@ -130,18 +130,24 @@ class UsersAdminTest extends TestCase
             ->assertStatus(200);
 
 
-        $response->assertJsonStructure([
-            '*' => [
 
-                '_id',
-                'user_uuid',
-                'name',
-                'email',
-                'active',
-                'roles' => [
-                    '*' => [
-                        'name', 'permissions'
+        $response->assertJsonStructure([
+            'data' => [
+
+                '*' => [
+
+                    '_id',
+                    'user_uuid',
+                    'name',
+                    'email',
+                    'active',
+                    'is_administrator',
+                    'roles' => [
+                        '*' => [
+                            'name', 'permissions'
+                        ]
                     ]
+
                 ]
 
             ]
@@ -153,7 +159,7 @@ class UsersAdminTest extends TestCase
     public function testUpdateUserNoPassword()
     {
 
-        $user = User::first();
+        $user = User::where('is_administrator', true)->first();
 
         $data = [
             'name' => str_random(12),
@@ -190,7 +196,7 @@ class UsersAdminTest extends TestCase
         ];
 
 
-        $user = User::first();
+        $user = User::where('is_administrator', true)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
         $headers = [
@@ -215,7 +221,7 @@ class UsersAdminTest extends TestCase
     public function testDeleteUser()
     {
 
-        $user = User::first();
+        $user = User::where('is_administrator', true)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
 
@@ -229,11 +235,11 @@ class UsersAdminTest extends TestCase
             ]);
 
 
-        $users = User::all();
-
-        foreach ($users as $user) {
-            User::find($user->id)->forceDelete();
-        }
+//        $users = User::all();
+//
+//        foreach ($users as $user) {
+//            User::find($user->id)->forceDelete();
+//        }
 
 
     }

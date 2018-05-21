@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Factories\JWTTokenBearerFactory;
-use App\Services\UserAllService;
+use App\Services\UserAdminAllService;
 use App\Services\UserCreateAdminService;
 use App\Services\UserFindService;
 use App\Services\UserRemoveService;
@@ -30,7 +30,7 @@ class UsersAdminController extends Controller
     private $findService;
 
     /**
-     * @var UserAllService
+     * @var UserAdminAllService
      */
     private $allService;
 
@@ -54,7 +54,7 @@ class UsersAdminController extends Controller
      * UsersController constructor.
      * @param UserCreateAdminService $createAdminService
      * @param UserFindService $findService
-     * @param UserAllService $allService
+     * @param UserAdminAllService $allService
      * @param UserRemoveService $removeService
      * @param UserUpdateService $updateService
      * @param JWTTokenBearerFactory $bearerFactory
@@ -62,7 +62,7 @@ class UsersAdminController extends Controller
     public function __construct(
         UserCreateAdminService $createAdminService,
         UserFindService $findService,
-        UserAllService $allService,
+        UserAdminAllService $allService,
         UserRemoveService $removeService,
         UserUpdateService $updateService,
         JWTTokenBearerFactory $bearerFactory

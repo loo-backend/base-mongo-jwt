@@ -49,7 +49,7 @@ class UserCreateService
             $data['active'] = false;
         }
 
-        unset($data['is_administrator']);
+        $data['is_administrator'] = false;
         unset($data['roles']);
 
         if (!$create = User::create($data) ) {

@@ -34,8 +34,6 @@ class UsersTenantTest extends TestCase
 
     }
 
-
-
     public function migrateAndFactory()
     {
         Artisan::call('migrate', [
@@ -57,7 +55,7 @@ class UsersTenantTest extends TestCase
         $data['roles'] = $this->roles;
 
 
-        $user = User::first();
+        $user = User::where('is_administrator', false)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
         $headers = [
@@ -85,7 +83,7 @@ class UsersTenantTest extends TestCase
     public function testShowUser()
     {
 
-        $user = User::first();
+        $user = User::where('is_administrator', false)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
         $headers = [
@@ -98,37 +96,7 @@ class UsersTenantTest extends TestCase
 
 
         $response->assertJsonStructure([
-            '_id',
-            'user_uuid',
-            'name',
-            'email',
-//            'active',
-//            'roles' => [
-//                '*' => [
-//                    'name', 'permissions'
-//                ]
-//            ]
-        ]);
-
-    }
-
-    public function testAllUsers()
-    {
-
-        $user = User::first();
-        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
-
-        $headers = [
-            'Accept' => 'application/vnd.laravel.v1+json',
-            'HTTP_Authorization' => 'Bearer ' . $token
-        ];
-
-        $response = $this->get('/users/tenants', $headers)
-            ->assertStatus(200);
-
-
-        $response->assertJsonStructure([
-            '*' => [
+            'data' => [
 
                 '_id',
                 'user_uuid',
@@ -142,6 +110,44 @@ class UsersTenantTest extends TestCase
                 ]
 
             ]
+        ]);
+
+    }
+
+    public function testAllUsersTenants()
+    {
+
+        $user = User::where('is_administrator', false)->first();
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
+
+        $headers = [
+            'Accept' => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
+
+        $response = $this->get('/users/tenants', $headers)
+            ->assertStatus(200);
+
+
+        $response->assertJsonStructure([
+            'data' => [
+
+                '*' => [
+
+                    '_id',
+                    'user_uuid',
+                    'name',
+                    'email',
+                    'active',
+                    'roles' => [
+                        '*' => [
+                            'name', 'permissions'
+                        ]
+                    ]
+
+                ]
+
+            ]
 
         ]);
 
@@ -150,7 +156,7 @@ class UsersTenantTest extends TestCase
     public function testUpdateUserNoPassword()
     {
 
-        $user = User::first();
+        $user = User::where('is_administrator', false)->first();
 
         $data = [
             'name' => str_random(12),
@@ -187,7 +193,7 @@ class UsersTenantTest extends TestCase
         ];
 
 
-        $user = User::first();
+        $user = User::where('is_administrator', false)->first();
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
         $headers = [

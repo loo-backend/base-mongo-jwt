@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Factories\JWTTokenBearerFactory;
-use App\Services\UserAllService;
+use App\Services\UserTenantAllService;
 use App\Services\UserCreateService;
 use App\Services\UserFindService;
 use App\Services\UserRemoveService;
@@ -29,7 +29,7 @@ class UsersTenantController extends Controller
     private $findService;
 
     /**
-     * @var UserAllService
+     * @var UserTenantAllService
      */
     private $allService;
 
@@ -53,7 +53,7 @@ class UsersTenantController extends Controller
      * UsersController constructor.
      * @param UserCreateService $createService
      * @param UserFindService $findService
-     * @param UserAllService $allService
+     * @param UserTenantAllService $allService
      * @param UserRemoveService $removeService
      * @param UserUpdateService $updateService
      * @param JWTTokenBearerFactory $bearerFactory
@@ -61,7 +61,7 @@ class UsersTenantController extends Controller
     public function __construct(
         UserCreateService $createService,
         UserFindService $findService,
-        UserAllService $allService,
+        UserTenantAllService $allService,
         UserRemoveService $removeService,
         UserUpdateService $updateService,
         JWTTokenBearerFactory $bearerFactory

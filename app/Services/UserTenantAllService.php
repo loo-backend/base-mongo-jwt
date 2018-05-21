@@ -8,7 +8,7 @@ use App\User;
  * Class UserAllService
  * @package App\Services
  */
-class UserAllService
+class UserTenantAllService
 {
 
     /**
@@ -19,7 +19,11 @@ class UserAllService
     public function all()
     {
 
-        if (!$user = User::all() ) {
+        $filter = [
+            ['is_administrator', false]
+        ];
+
+        if (!$user = User::where($filter)->paginate() ) {
             return false;
         }
 
