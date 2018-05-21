@@ -2,7 +2,6 @@
 
 $this->post('/tenants', 'UsersTenantController@store')->name('tenants.store');
 
-//Comentar para testes de TDD
 $this->group(['middleware' => ['jwt.auth']], function () {
 
     $this->resource('admins', 'UsersAdminController')->except([
@@ -10,7 +9,7 @@ $this->group(['middleware' => ['jwt.auth']], function () {
     ]);
 
     $this->resource('tenants', 'UsersTenantController')->except([
-        'create', 'edit', 'store'
+        'create', 'edit', 'store' , 'destroy'
     ]);
 
 });

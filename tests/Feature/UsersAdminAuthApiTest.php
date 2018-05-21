@@ -6,8 +6,6 @@ use App\User;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
-date_default_timezone_set('America/Sao_Paulo');
-
 class UsersAdminAuthApiTest extends TestCase
 {
 
@@ -35,26 +33,33 @@ class UsersAdminAuthApiTest extends TestCase
 
     }
 
+    public function migrateAndFactory()
+    {
+        Artisan::call('migrate', [
+            '--path' => "app/database/migrations"
+        ]);
+
+        $users = factory(User::class)->create(['is_administrator' => true]);
+        $users->roles()->create($this->roles);
+
+    }
+
 
     public function testUserCreate()
     {
 
+        $this->migrateAndFactory();
 
-        $users = factory(User::class)->create(['is_administrator' => true]);
-        $users->roles()->create($this->roles);
         $user = User::first();
-
         $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
-
         $headers = [
-            'Accept'        => 'application/vnd.laravel.v1+json',
+            'Accept' => 'application/vnd.laravel.v1+json',
             'HTTP_Authorization' => 'Bearer ' . $token
         ];
 
         $this->post('/users/admins', $this->data, $headers)
                 ->assertStatus(200);
-
 
         $this->assertDatabaseHas('users', [
             'name' => $this->data['name'],
@@ -68,7 +73,7 @@ class UsersAdminAuthApiTest extends TestCase
 
         $user = User::first();
         $response = $this->post('/auth/authenticate',
-                ['email'=>$user->email,'password' => $this->data['password']])
+                ['email'=>  $user->email, 'password' => 123456])
             ->assertStatus(200);
 
         $response->assertJson(['success' => true]);

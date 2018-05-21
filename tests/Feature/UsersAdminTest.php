@@ -4,14 +4,14 @@ namespace Tests\Feature;
 
 use App\User;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Artisan;
 
-date_default_timezone_set('America/Sao_Paulo');
 
-class UsersTenantTest extends TestCase
+class UsersAdminTest extends TestCase
 {
 
     private $roles =
-        ['name' => 'TENANT_ADMINISTRATOR',
+        ['name' => 'ADMINISTRATOR',
             'permissions' => [
                 'ALL'
             ]
@@ -29,6 +29,7 @@ class UsersTenantTest extends TestCase
             'name' => str_random(10),
             'email' => str_random(6) . '@mail.com',
             'active' => true,
+            'is_administrator' => true,
             'password' => 'secret',
             'password_confirmation' => 'secret',
         ];
@@ -36,37 +37,43 @@ class UsersTenantTest extends TestCase
     }
 
 
-    public function getToken()
+    public function migrateAndFactory()
     {
+        Artisan::call('migrate', [
+            '--path' => "app/database/migrations"
+        ]);
 
-        $users = factory(User::class)->create();
+        $users = factory(User::class)->create(['is_administrator' => true]);
         $users->roles()->create($this->roles);
 
-        $user = User::first();
-
-        $response = $this->post('/auth/authenticate',
-            ['email'=>$user->email,'password' => $this->data['password']])
-            ->assertStatus(200);
-
-        $data = (array) json_decode( $response->content() );
-
-        return $data['HTTP_Authorization'];
-
     }
+
 
     public function testUserCreate()
     {
 
+        $this->migrateAndFactory();
+
         $data = $this->data;
         $data['roles'] = $this->roles;
 
-        $response = $this->post('/users/tenants', $data);
 
-        $response->assertStatus(200);
+        $user = User::first();
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
+
+        $headers = [
+            'Accept' => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
+
+        $response = $this->post('/users/admins', $data, $headers)
+            ->assertStatus(200);
+
 
         $this->assertDatabaseHas('users', [
             'name' => $data['name'],
-            'email' => $data['email']
+            'email' => $data['email'],
+            'is_administrator' => $data['is_administrator']
         ]);
 
         $response->assertJsonStructure([
@@ -80,14 +87,18 @@ class UsersTenantTest extends TestCase
     public function testShowUser()
     {
 
+
         $user = User::first();
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
-        $response = $this->withHeaders([
-            'HTTP_Authorization' => $this->getToken(),
-        ])->json('GET', '/users/tenants/'. $user->id);
+        $headers = [
+            'Accept' => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
 
+        $response = $this->get('/users/admins/'. $user->id, $headers)
+            ->assertStatus(200);
 
-        $response->assertStatus(200);
 
         $response->assertJsonStructure([
             '_id',
@@ -107,11 +118,17 @@ class UsersTenantTest extends TestCase
     public function testAllUsers()
     {
 
-        $response = $this->withHeaders([
-            'HTTP_Authorization' => $this->getToken(),
-        ])->json('GET', '/users/tenants');
+        $user = User::first();
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
-        $response->assertStatus(200);
+        $headers = [
+            'Accept' => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
+
+        $response = $this->get('/users/admins', $headers)
+            ->assertStatus(200);
+
 
         $response->assertJsonStructure([
             '*' => [
@@ -135,6 +152,7 @@ class UsersTenantTest extends TestCase
 
     public function testUpdateUserNoPassword()
     {
+
         $user = User::first();
 
         $data = [
@@ -142,12 +160,16 @@ class UsersTenantTest extends TestCase
             'email' => $user->email
         ];
 
-        $response = $this->withHeaders([
-            'HTTP_Authorization' => $this->getToken(),
-        ])->json('PUT', '/users/tenants/'.$user->id, $data);
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
+        $headers = [
+            'Accept' => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
 
-        $response->assertStatus(200);
+        $this->put('/users/admins/'.$user->id, $data, $headers)
+            ->assertStatus(200);
+
 
         $this->assertDatabaseMissing('users',[
             'name' => $user->name,
@@ -160,7 +182,6 @@ class UsersTenantTest extends TestCase
     public function testUpdateUserWithPassword()
     {
 
-        $user = User::first();
         $data = [
             'name' => str_random(12),
             'email' => str_random(7) . '@mail.com',
@@ -169,12 +190,16 @@ class UsersTenantTest extends TestCase
         ];
 
 
-        $response = $this->withHeaders([
-            'HTTP_Authorization' => $this->getToken(),
-        ])->json('PUT', '/users/tenants/'.$user->id, $data);
+        $user = User::first();
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
+        $headers = [
+            'Accept' => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
 
-        $response->assertStatus(200);
+        $this->put('/users/admins/'.$user->id, $data, $headers)
+            ->assertStatus(200);
 
         $this->assertDatabaseMissing('users', [
             'name' => $user->name,
@@ -184,25 +209,31 @@ class UsersTenantTest extends TestCase
 
     }
 
+    /**
+     *
+     */
     public function testDeleteUser()
     {
 
-        $user_all = User::all();
+        $user = User::first();
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
 
-        foreach ($user_all as $u) {
-            User::find($u->id)->forceDelete();
-        }
-
-        $user =  factory(User::class)->create()->first();
 
         $response = $this->withHeaders([
-            'HTTP_Authorization' => $this->getToken(),
-        ])->json('DELETE', '/users/tenants/'.$user->id);
+            'HTTP_Authorization' => 'Bearer '. $token,
+        ])->json('DELETE', '/users/admins/'.$user->id);
 
         $response->assertStatus(200)
-                ->assertExactJson([
-                    'response' => 'user_removed'
-                ]);
+            ->assertExactJson([
+                'response' => 'user_removed'
+            ]);
+
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            User::find($user->id)->forceDelete();
+        }
 
 
     }

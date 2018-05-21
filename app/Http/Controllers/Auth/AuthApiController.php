@@ -32,6 +32,7 @@ class AuthApiController extends Controller
     public function authenticate(Request $request)
     {
 
+
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
 
@@ -43,13 +44,10 @@ class AuthApiController extends Controller
             ], 401);
         }
 
-
-        $token = $this->bearerFactory->generate($request);
-
         //Authorization || HTTP_Authorization
         return response()->json([
             'success' => true,
-            'HTTP_Authorization' => $token
+            'HTTP_Authorization' => $this->bearerFactory->generate($request)
         ], 200);
 
 

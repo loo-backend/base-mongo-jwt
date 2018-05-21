@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class UserUpdateService
@@ -25,7 +26,14 @@ class UserUpdateService
         $user = User::find($id);
 
         if ($user) {
-           $user->update($request->all());
+
+            $data = $request->all();
+
+            if (isset($request->all()['password'])) {
+                $data['password'] = Hash::make($request->all()['password']);
+            }
+
+            $user->update($data);
         }
 
         return $user;

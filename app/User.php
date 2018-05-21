@@ -43,6 +43,7 @@ class User extends Authenticatable implements JWTSubject
 
     protected $dates = ['deleted_at'];
 
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

@@ -206,20 +206,20 @@ class UsersTenantController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-
-        if (!$result = $this->findService->findBy($id)) {
-            return response()->json(['error' => 'user_not_found'], 422);
-        }
-
-        if (!$result = $this->removeService->remove($id)) {
-
-            return response()->json(['error' => 'user_not_removed'], 422);
-        }
-
-        return response()->json(['response' => 'user_removed'], 200);
-
-    }
+//    public function destroy($id)
+//    {
+//
+//        if (!$result = $this->findService->findBy($id)) {
+//            return response()->json(['error' => 'user_not_found'], 422);
+//        }
+//
+//        if (!$result = $this->removeService->remove($id)) {
+//
+//            return response()->json(['error' => 'user_not_removed'], 422);
+//        }
+//
+//        return response()->json(['response' => 'user_removed'], 200);
+//
+//    }
 
 }

@@ -107,7 +107,6 @@ class UsersAdminController extends Controller
     {
 
 
-
         $validation = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users|max:255',
@@ -180,7 +179,7 @@ class UsersAdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => [
                 'required',
-                Rule::unique('users', '_Sid')->ignore($id),
+                Rule::unique('users', '_id')->ignore($id),
             ],
             'password' => 'sometimes|required|confirmed|min:6|max:255'
         ]);
