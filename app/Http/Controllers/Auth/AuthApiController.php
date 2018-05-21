@@ -2,28 +2,26 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Factories\JWTTokenBearerFactory;
 use App\Http\Controllers\Controller;
-use App\Services\UserWhereFirstService;
 use Illuminate\Http\Request;
 use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-
+use JWTFactory;
 
 class AuthApiController extends Controller
 {
     /**
-     * @var UserWhereFirstService
+     * @var JWTTokenBearerFactory
      */
-    private $whereFirstService;
+    private $bearerFactory;
 
     /**
      * AuthApiController constructor.
-     * @param UserWhereFirstService $whereFirstService
+     * @param JWTTokenBearerFactory $bearerFactory
      */
-    public function __construct(UserWhereFirstService $whereFirstService)
+    public function __construct(JWTTokenBearerFactory $bearerFactory)
     {
-
-        $this->whereFirstService = $whereFirstService;
+        $this->bearerFactory = $bearerFactory;
     }
 
     /**
@@ -34,36 +32,24 @@ class AuthApiController extends Controller
     public function authenticate(Request $request)
     {
 
+
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
 
-        try {
+        if (!$token = JWTAuth::attempt($credentials)) {
 
-            // attempt to verify the credentials and create a token for the user
-            if (! $token = JWTAuth::attempt($credentials)) {
-
-                  return response()->json([
-                    'success' => false,
-                    'error' => 'invalid_credentials'
-                ], 401);
-            }
-
-        } catch (JWTException $e) {
-
-            // something went wrong whilst attempting to encode the token
             return response()->json([
                 'success' => false,
-                'error' => 'could_not_create_token'
-            ], 500);
-
+                'error' => 'invalid_credentials'
+            ], 401);
         }
 
-        // all good so return the token
+        //Authorization || HTTP_Authorization
         return response()->json([
             'success' => true,
-            'token' => $token,
-            'data'=> $this->whereFirstService->whereFirst(['email' => $request->input('email')])
+            'HTTP_Authorization' => $this->bearerFactory->generate($request)
         ], 200);
+
 
     }
 

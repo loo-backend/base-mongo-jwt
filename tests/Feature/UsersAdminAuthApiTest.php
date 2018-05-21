@@ -6,8 +6,6 @@ use App\User;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
-date_default_timezone_set('America/Sao_Paulo');
-
 class UsersAdminAuthApiTest extends TestCase
 {
 
@@ -35,38 +33,33 @@ class UsersAdminAuthApiTest extends TestCase
 
     }
 
-    public function getToken()
+    public function migrateAndFactory()
     {
-
         Artisan::call('migrate', [
             '--path' => "app/database/migrations"
         ]);
 
-
         $users = factory(User::class)->create(['is_administrator' => true]);
         $users->roles()->create($this->roles);
 
-
-        $user = User::first();
-
-        $response = $this->post('/auth/authenticate',
-            ['email'=>$user->email,'password' => $this->data['password']])
-            ->assertStatus(200);
-
-        $data = (array) json_decode( $response->content() );
-
-        return $data['token'];
-
     }
+
 
     public function testUserCreate()
     {
 
-        $response = $this->withHeaders([
-            'HTTP_Authorization' => 'Bearer '. $this->getToken(),
-        ])->json('POST', '/users/admins', $this->data);
+        $this->migrateAndFactory();
 
-        $response->assertStatus(200);
+        $user = User::first();
+        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
+
+        $headers = [
+            'Accept' => 'application/vnd.laravel.v1+json',
+            'HTTP_Authorization' => 'Bearer ' . $token
+        ];
+
+        $this->post('/users/admins', $this->data, $headers)
+                ->assertStatus(200);
 
         $this->assertDatabaseHas('users', [
             'name' => $this->data['name'],
@@ -79,15 +72,12 @@ class UsersAdminAuthApiTest extends TestCase
     public function testUserAuthenticateValid() {
 
         $user = User::first();
-
-
         $response = $this->post('/auth/authenticate',
-                ['email'=>$user->email,'password' => $this->data['password']])
+                ['email'=>  $user->email, 'password' => 123456])
             ->assertStatus(200);
 
         $response->assertJson(['success' => true]);
-        $response->assertJson(['token' => true]);
-        $response->assertJson(['data' => true]);
+        $response->assertJson(['HTTP_Authorization' => true]);
 
     }
 
@@ -95,7 +85,6 @@ class UsersAdminAuthApiTest extends TestCase
     public function testUserAuthenticateInvalid() {
 
         $user = User::first();
-
         $response = $this->post('/auth/authenticate',
                 ['email'=>$user->email,'password' => str_random(6)])
             ->assertStatus(401);
